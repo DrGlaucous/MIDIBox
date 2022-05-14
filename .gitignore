@@ -3,3 +3,6 @@
 ################################################################################
 
 /Firmware/ESP32MIDI/ESP32MIDI/__vm
+/Firmware/ESP32MIDI/ESP32MIDI/Debug
+/Firmware/ESP32MIDI/ESP32MIDI/Release
+/Firmware/ESP32MIDI/.vs/ESP32MIDI/v16
