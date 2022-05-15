@@ -1,0 +1,12 @@
+ESP32:
+https://www.ebay.com/itm/124835593994?hash=item1d10c7ff0a%3Ag%3A424AAOSwbpBhCajY&LH_BIN=1
+or (without base)
+https://www.ebay.com/itm/265634774262?hash=item3dd910fcf6%3Ag%3AVoYAAOSwqDdiT-gD&LH_BIN=1
+
+Servos:
+https://www.ebay.com/itm/203184702769?hash=item2f4ec08531:g:ii4AAOSwCwFfs~Zj
+
+5v PSU:
+https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2334524.m570.l1313&_nkw=5v+30a+power+supply&_sacat=0&LH_TitleDesc=0&_odkw=5v+power+supply+30a&_osacat=0&LH_BIN=1&_sop=15&LH_PrefLoc=1
+or
+https://www.ebay.com/itm/294913386138?hash=item44aa35269a%3Ag%3A4wMAAOSwL25iUO5n&LH_BIN=1
