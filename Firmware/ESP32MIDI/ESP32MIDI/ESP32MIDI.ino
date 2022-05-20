@@ -4,13 +4,13 @@
  Author:	Dr. G
 */
 
+#include <MIDI.h>
 #include <Arduino.h>
-#include <Control_Surface.h>
+//#include <Control_Surface.h>
 #include "ServoHandler.h"
 
-
+/*
 HardwareSerialMIDI_Interface MIDI_SERIAL = Serial;
-
 BluetoothMIDI_Interface MIDI_BLE;
 
 // Custom MIDI callback that prints incoming messages.
@@ -36,8 +36,23 @@ struct MyMIDI_Callbacks : FineGrainedMIDI_Callbacks<MyMIDI_Callbacks> {
     }
 
 } callback;
+*/
 
 
+MIDI_CREATE_DEFAULT_INSTANCE();
+
+// Function that is called whenever a MIDI Note On message is received.
+void onNoteOn(uint8_t channel, uint8_t pitch, uint8_t velocity) {
+
+    for (int i = 0; i < SERVO_COUNT; ++i)
+    {
+        if (SMT[i].noteNo == pitch)
+        {
+            SMT[i].requestNote = true;
+        }
+    }
+
+}
 
 
 
@@ -50,12 +65,16 @@ void setup() {
     //TEMP serves as our button pin
     pinMode(5, INPUT_PULLUP);
 
+    //tie callbacks to midi events
+    MIDI.setHandleNoteOn(onNoteOn);
+    MIDI.begin();
 
-    MIDI_SERIAL.begin(); // Initialize midi interface
-    MIDI_SERIAL.setCallbacks(callback);
 
-    MIDI_BLE.begin(); // Initialize midi interface
-    MIDI_BLE.setCallbacks(callback);
+    //old control surface stuff
+    //MIDI_SERIAL.begin(); // Initialize midi interface
+    //MIDI_SERIAL.setCallbacks(callback);
+    //MIDI_BLE.begin(); // Initialize midi interface
+    //MIDI_BLE.setCallbacks(callback);
 }
 
 // the loop function runs over and over again until power down or reset
@@ -63,9 +82,11 @@ void loop() {
 
     GetTicks();
 
+    MIDI.read();
 
-    MIDI_SERIAL.update(); // Update the Control Surface
-    MIDI_BLE.update();
+    //old control surface stuff
+    //MIDI_SERIAL.update(); // Update the Control Surface
+    //MIDI_BLE.update();
 
 
     //perform servo actions
