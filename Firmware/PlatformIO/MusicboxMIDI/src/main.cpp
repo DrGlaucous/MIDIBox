@@ -7,7 +7,15 @@
 #include <MIDI.h>
 #include <Arduino.h>
 //#include <Control_Surface.h>
+#include "configuration.h"
 #include "ServoHandler.h"
+
+//for STM32 boards, Serial is Serial1
+#ifdef USING_STM32
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
+#else
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
+#endif
 
 /*
 HardwareSerialMIDI_Interface MIDI_SERIAL = Serial;
@@ -39,10 +47,11 @@ struct MyMIDI_Callbacks : FineGrainedMIDI_Callbacks<MyMIDI_Callbacks> {
 */
 
 
-MIDI_CREATE_DEFAULT_INSTANCE();
 
 // Function that is called whenever a MIDI Note On message is received.
 void onNoteOn(uint8_t channel, uint8_t pitch, uint8_t velocity) {
+
+    //digitalWrite(PC13, false);//this LED is inverted: "false" is actually "on"
 
     for (int i = 0; i < SERVO_COUNT; ++i)
     {
@@ -51,6 +60,11 @@ void onNoteOn(uint8_t channel, uint8_t pitch, uint8_t velocity) {
             SMT[i].requestNote = true;
         }
     }
+
+}
+void onNoteOff(uint8_t channel, uint8_t pitch, uint8_t velocity)
+{
+    //digitalWrite(PC13, true);
 
 }
 
@@ -63,12 +77,12 @@ void setup() {
 
 
     //TEMP serves as our button pin
-    pinMode(5, INPUT_PULLUP);
-
+    pinMode(PB1, INPUT_PULLUP);
+    pinMode(PC13, OUTPUT);
     //tie callbacks to midi events
     MIDI.setHandleNoteOn(onNoteOn);
+    MIDI.setHandleNoteOff(onNoteOff);
     MIDI.begin();
-
 
     //old control surface stuff
     //MIDI_SERIAL.begin(); // Initialize midi interface
@@ -84,21 +98,21 @@ void loop() {
 
     MIDI.read();
 
+
     //old control surface stuff
     //MIDI_SERIAL.update(); // Update the Control Surface
     //MIDI_BLE.update();
-
-
+    
     //perform servo actions
     static bool pressedButton = false;
     //bits of trial code
-    if (digitalRead(5) == 0)
+
+    if (digitalRead(PB1) == ON_STATE)
     {
         if (pressedButton == false)
         {
         
-            SMT[1].requestNote = true;
-
+            onNoteOn(0, 60, 120);
 
             pressedButton = true;
         }
@@ -113,6 +127,28 @@ void loop() {
 
     AllServoSweep();
     AllServoDrive();
+    WaferServoDrive();
+
+
+
+
+    //onboard LED if ANY servos are active
+    for(int i = 0; i <= SERVO_COUNT; ++i)
+    {
+        
+        if(SMT[i].goForward == true)
+        {
+            //digitalWrite(PC13, true);
+            break;
+        }
+        else if(i == SERVO_COUNT)
+        {
+            //digitalWrite(PC13, false);
+        }
+
+    }
+
+
 
 
 

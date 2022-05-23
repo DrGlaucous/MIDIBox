@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "configuration.h"
 #include "ServoHandler.h"
 //#include <Control_Surface.h>
 
@@ -8,7 +9,7 @@ SERVO_ID SMT[] =
 {
 	//pin, note, minRange, maxRange, currentPPM, requestNote, goForward
 	{4, 0, 500, 2000, 500, false, false},
-	{19, 60, 500, 2000, 500, false, false},
+	{PB7, 60, 500, 2000, 500, false, false},
 	{4, 60, 500, 2000, 500, false, false},
 	{4, 60, 500, 2000, 500, false, false},
 	{4, 60, 500, 2000, 500, false, false},
@@ -39,6 +40,10 @@ SERVO_ID SMT[] =
 	{4, 60, 500, 2000, 500, false, false},
 };
 
+SERVO_ID CONTINUOUS_SERVO =
+	//pin, note, minRange, maxRange, currentPPM, requestNote, goForward
+	{CONTINUOUS_SERVO_PIN, 0, CONTINUOUS_REST_ANGLE, CONTINUOUS_ACTIVE_ANGLE, CONTINUOUS_REST_ANGLE, false, false};
+
 
 unsigned long MillisecondTicks{};
 unsigned long MicrosecondTicks{};
@@ -51,66 +56,108 @@ unsigned long LastMicrosecondTicks{};
 //pinMode all the output pins
 void SetupServo(void)
 {
+	//note servos
 	for (int i = 0; i < SERVO_COUNT; ++i)
 	{
 		pinMode(SMT[i].pinNo, OUTPUT);
 	}
+
+	//wafer servo
+	pinMode(CONTINUOUS_SERVO.pinNo, OUTPUT);
+
 }
 
-//drives the servos
-void AllServoDrive(void)
+//send the correct pulses to the servo
+void ServoBackend(SERVO_ID *tower)
 {
 	//global servo clock
 	//every 20 Milliseconds, we will set all servo pins to HIGH
 	//and then turn them off if the microsecond count is >= to the value prescribed
 
 	//used to get the change in microseconds every 20 Milliseconds
-	static unsigned long divyMicroseconds{};//were static locals, made globals for debugging
+	static unsigned long divyMicroseconds{};
 	static unsigned long previousMicrosecondTick{};
 
 
 	if (MillisecondTicks % 20 == 0 && MillisecondTicks != LastMillisecondTicks)// !(isFinished & SERVO_HIT_REFRESH))
 	{
+		//handy note: '|=' adds a binary flag, '&= ~' removes it
+
+		//moved the for() loops outside this function
 
 		previousMicrosecondTick = MicrosecondTicks;
-		//divyMicroseconds = 0;//reset the PPM microseconds counter
 
-		//I found a better way to do this
-		//isFinished |= SERVO_HIT_REFRESH;
 
-		//set servo pins to HIGH
-		for (int i = 0; i < SERVO_COUNT; ++i)//i tried to use sizeof(), but that is the memory size in bytes, not entries in the array
-		{
-			//all servos will always be enabled
-			digitalWrite(SMT[i].pinNo, true);
-			
-		}
+		//set servo pin to HIGH every 20 milliseconds
+		digitalWrite(tower->pinNo, true);
 		
 	}
 	else
 	{
-		//only remove this flag if the number of Milliseconds has incremented
-		//if(MillisecondTicks % 20 != 0 && (isFinished & SERVO_HIT_REFRESH))
-		//	isFinished &= ~SERVO_HIT_REFRESH;
 
 		//get the passage of microseconds
 		divyMicroseconds = MicrosecondTicks - previousMicrosecondTick;
 
 		
-		for (int i = 0; i < SERVO_COUNT; ++i)
+		if (tower->currentPPM < divyMicroseconds)
 		{
-			if (SMT[i].currentPPM < divyMicroseconds)
-			{
-				digitalWrite(SMT[i].pinNo, false);
-			}
-
+			digitalWrite(tower->pinNo, false);
 		}
 		
 
+	}
 
+
+
+}
+
+//drives the note servos
+void AllServoDrive(void)
+{
+	for(int i = 0; i < SERVO_COUNT; ++i)
+	{
+		ServoBackend(&SMT[i]);
 
 	}
 
+}
+
+//drives the wafer spinner servo
+void WaferServoDrive(void)
+{
+
+	static unsigned int waferTimeout{1000};
+	//static bool waferSpeedSet{};
+
+	for(int i = 0; i < SERVO_COUNT; ++i)
+	{
+		//if any servo is currently playing a note
+		if(SMT[i].goForward == true)
+		{
+			waferTimeout = 0;	
+		}	
+	}
+
+	//once every millisecond
+	if (MillisecondTicks != LastMillisecondTicks)
+	{
+		++waferTimeout;
+	}
+
+	//this will only attach the servo if it needs to be run, which will save energy
+	if(waferTimeout < CONTINUOUS_RUN_TIME)
+	{
+		digitalWrite(PC13, false);
+
+		CONTINUOUS_SERVO.currentPPM = CONTINUOUS_SERVO.maxRange;
+		ServoBackend(&CONTINUOUS_SERVO);
+	}
+	else
+	{
+		digitalWrite(PC13, true);
+		CONTINUOUS_SERVO.currentPPM = CONTINUOUS_SERVO.minRange;
+		ServoBackend(&CONTINUOUS_SERVO);
+	}
 
 
 }
