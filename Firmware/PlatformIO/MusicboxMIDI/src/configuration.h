@@ -1,5 +1,5 @@
 //Configuration
-//this program was build using PlatformIO.
+//this program was built using PlatformIO.
 //with some tweaks, it COULD be built using the arduino IDE enviroment. All libraries used in this project are arduino
 
 

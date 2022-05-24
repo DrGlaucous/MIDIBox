@@ -46,6 +46,15 @@ struct MyMIDI_Callbacks : FineGrainedMIDI_Callbacks<MyMIDI_Callbacks> {
 } callback;
 */
 
+//System clock
+void GetTicks(void)
+{
+	LastMillisecondTicks = MillisecondTicks;
+	LastMicrosecondTicks = MicrosecondTicks;
+
+	MillisecondTicks = millis();
+	MicrosecondTicks = micros();
+}
 
 
 // Function that is called whenever a MIDI Note On message is received.
