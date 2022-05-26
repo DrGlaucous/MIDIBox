@@ -218,12 +218,3 @@ void AllServoSweep(void)
 
 
 }
-
-void GetTicks(void)
-{
-	LastMillisecondTicks = MillisecondTicks;
-	LastMicrosecondTicks = MicrosecondTicks;
-
-	MillisecondTicks = millis();
-	MicrosecondTicks = micros();
-}
