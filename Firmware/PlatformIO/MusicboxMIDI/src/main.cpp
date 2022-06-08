@@ -78,16 +78,13 @@ void onNoteOff(uint8_t channel, uint8_t pitch, uint8_t velocity)
 }
 
 
-
-// the setup function runs once when you press reset or power the board
 void setup() {
 
-    SetupServo();
 
 
     //TEMP serves as our button pin
-    pinMode(PB1, INPUT_PULLUP);
-    pinMode(PC13, OUTPUT);
+    //pinMode(PB1, INPUT_PULLUP);
+    //pinMode(PC13, OUTPUT);
     //tie callbacks to midi events
     MIDI.setHandleNoteOn(onNoteOn);
     MIDI.setHandleNoteOff(onNoteOff);
@@ -98,14 +95,24 @@ void setup() {
     //MIDI_SERIAL.setCallbacks(callback);
     //MIDI_BLE.begin(); // Initialize midi interface
     //MIDI_BLE.setCallbacks(callback);
+
+    SetupServo();
+    //pinMode(PB2, OUTPUT);
+    //pinMode(PA14, OUTPUT);
+
 }
 
-// the loop function runs over and over again until power down or reset
+
 void loop() {
 
     GetTicks();
 
-    MIDI.read();
+
+    //an effort to conserve cycles by only calling this once per millisecond
+    if( MillisecondTicks != LastMillisecondTicks)//% 1000 == 0)
+    {
+        MIDI.read();
+    }
 
 
     //old control surface stuff
@@ -113,50 +120,13 @@ void loop() {
     //MIDI_BLE.update();
     
     //perform servo actions
-    static bool pressedButton = false;
-    //bits of trial code
+    //static bool pressedButton = false;
 
-    if (digitalRead(PB1) == ON_STATE)
-    {
-        if (pressedButton == false)
-        {
-        
-            onNoteOn(0, 60, 120);
-
-            pressedButton = true;
-        }
-
-
-    }
-    else
-    {
-        pressedButton = false;
-    }
 
 
     AllServoSweep();
     AllServoDrive();
     WaferServoDrive();
-
-
-
-
-    //onboard LED if ANY servos are active
-    for(int i = 0; i <= SERVO_COUNT; ++i)
-    {
-        
-        if(SMT[i].goForward == true)
-        {
-            //digitalWrite(PC13, true);
-            break;
-        }
-        else if(i == SERVO_COUNT)
-        {
-            //digitalWrite(PC13, false);
-        }
-
-    }
-
 
 
 

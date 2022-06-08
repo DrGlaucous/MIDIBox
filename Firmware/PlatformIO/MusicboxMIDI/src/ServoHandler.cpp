@@ -8,37 +8,41 @@
 SERVO_ID SMT[] =
 {
 	//pin, note, minRange, maxRange, currentPPM, requestNote, goForward
-	{4, 0, 500, 2000, 500, false, false},
-	{PB7, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
-	{4, 60, 500, 2000, 500, false, false},
+	//main side (forwards)
+	{PB12, 53, 1000, 1500, 1000, false, false},//lowest note, going up
+	{PB13, 55, 1000, 1500, 1000, false, false},
+	{PB14, 60, 1000, 1500, 1000, false, false},
+	{PA8, 62, 1000, 1500, 1000, false, false},
+	{PA8, 64, 1000, 1500, 1000, false, false},
+	{PA11, 65, 1000, 1500, 1000, false, false},
+	{PA12, 67, 1000, 1500, 1000, false, false},
+	{PA15, 69, 1000, 1500, 1000, false, false},
+	{PB3, 70, 1000, 1500, 1000, false, false},
+	{PB4, 71, 1000, 1500, 1000, false, false},
+	{PB5, 72, 1000, 1500, 1000, false, false},
+	{PB6, 73, 1000, 1500, 1000, false, false},
+	{PB7, 74, 1000, 1500, 1000, false, false},
+	{PB8, 75, 1000, 1500, 1000, false, false},
+	{PB9, 76, 1000, 1500, 1000, false, false},
+	//port side (backwards)
+	{PB11, 77, 1500, 1000, 1500, false, false},//mid-note, going up
+	{PB10, 78, 1500, 1000, 1500, false, false},
+	{PB1, 79, 1500, 1000, 1500, false, false},
+	{PB0, 80, 1500, 1000, 1500, false, false},
+	{PA7, 81, 1500, 1000, 1500, false, false},
+	{PA6, 82, 1500, 1000, 1500, false, false},
+	{PA5, 83, 1500, 1000, 1500, false, false},
+	{PA4, 84, 1500, 1000, 1500, false, false},
+	{PA3, 85, 1500, 1000, 1500, false, false},
+	{PA2, 86, 1500, 1000, 1500, false, false},
+	{PA1, 87, 1500, 1000, 1500, false, false},
+	{PA0, 88, 1500, 1000, 1500, false, false},
+	{PC15, 89, 1500, 1000, 1500, false, false},
+	{PC14, 91, 1500, 1000, 1500, false, false},
+	{PC13, 93, 1500, 1000, 1500, false, false},//highest note
 };
+
+
 
 SERVO_ID CONTINUOUS_SERVO =
 	//pin, note, minRange, maxRange, currentPPM, requestNote, goForward
@@ -59,7 +63,9 @@ void SetupServo(void)
 	//note servos
 	for (int i = 0; i < SERVO_COUNT; ++i)
 	{
+		SMT[i].activeTime = 0;//initialize this variable
 		pinMode(SMT[i].pinNo, OUTPUT);
+
 	}
 
 	//wafer servo
@@ -78,8 +84,10 @@ void ServoBackend(SERVO_ID *tower)
 	static unsigned long divyMicroseconds{};
 	static unsigned long previousMicrosecondTick{};
 
+	//static bool MillisecondTickHasReset{};//to save on math and only calulate this one time per cycle
 
-	if (MillisecondTicks % 20 == 0 && MillisecondTicks != LastMillisecondTicks)// !(isFinished & SERVO_HIT_REFRESH))
+
+	if (MillisecondTicks != LastMillisecondTicks && MillisecondTicks % 20 == 0)// !(isFinished & SERVO_HIT_REFRESH))
 	{
 		//handy note: '|=' adds a binary flag, '&= ~' removes it
 
@@ -116,11 +124,15 @@ void AllServoDrive(void)
 {
 	for(int i = 0; i < SERVO_COUNT; ++i)
 	{
-		ServoBackend(&SMT[i]);
+		//will not run the servo if it is not being used
+		if(SMT[i].activeTime < SERVO_PUSH_TIME + (SERVO_PUSH_TIME / 2))//I've added a little extra time for the servo to make it back
+			ServoBackend(&SMT[i]);
 
 	}
 
 }
+
+
 
 //drives the wafer spinner servo
 void WaferServoDrive(void)
@@ -147,14 +159,14 @@ void WaferServoDrive(void)
 	//this will only attach the servo if it needs to be run, which will save energy
 	if(waferTimeout < CONTINUOUS_RUN_TIME)
 	{
-		digitalWrite(PC13, false);
+		//digitalWrite(PC13, false);
 
 		CONTINUOUS_SERVO.currentPPM = CONTINUOUS_SERVO.maxRange;
 		ServoBackend(&CONTINUOUS_SERVO);
 	}
 	else
 	{
-		digitalWrite(PC13, true);
+		//digitalWrite(PC13, true);
 		CONTINUOUS_SERVO.currentPPM = CONTINUOUS_SERVO.minRange;
 		ServoBackend(&CONTINUOUS_SERVO);
 	}
@@ -171,18 +183,74 @@ void SingleServoSweep(SERVO_ID *tower)
 	{
 		tower->requestNote = false;
 		tower->goForward = true;
+		tower->activeTime = 0;
 	}
 
+	
+	if(tower->minRange > tower->maxRange)
+	{
+		
+		//everything here is an exact copy of the logic below, but inverted to account for the reversed inequalities
+		if (tower->goForward == true)
+		{
+			if (tower->currentPPM > tower->maxRange)//tower is less than max range AND its max range is indeed larger than its min range
+			{
+				tower->currentPPM -= ((tower->minRange - tower->maxRange) * 2) / SERVO_PUSH_TIME;
+			}
+			else
+			{
+				tower->goForward = false;
+			}
+		}
+		else if (tower->currentPPM < tower->minRange)
+		{
+			tower->currentPPM += ((tower->minRange - tower->maxRange) * 2) / SERVO_PUSH_TIME;
+		}
+		
+	}
+	else
+	{
+		
+		if (tower->goForward == true)
+		{
+			//add a value to its angle
+			if (tower->currentPPM < tower->maxRange)//tower is less than max range AND its max range is indeed larger than its min range
+			{
+				//ratio of PPM range to time (the *2 is the result of the need to devide this between forward and backward motion)
+				//the function assumes it will be called every Millisecond
+				tower->currentPPM += ((tower->maxRange - tower->minRange) * 2) / SERVO_PUSH_TIME;
 
+			}
+			else
+			{
+
+				tower->goForward = false;
+			}
+
+
+		}
+		else if (tower->currentPPM > tower->minRange)
+		{
+			tower->currentPPM -= ((tower->maxRange - tower->minRange) * 2) / SERVO_PUSH_TIME;
+		}
+		
+
+	}
+
+	if(tower->activeTime < SERVO_PUSH_TIME * 2)//this conditional prevents integer overflowing
+		++tower->activeTime;//increment the timeout variable
+
+
+	//original program (before the reversed support)
+	/*
 	if (tower->goForward == true)
 	{
 		//add a value to its angle
-		if (tower->currentPPM < tower->maxRange)
+		if (tower->currentPPM < tower->maxRange)//tower is less than max range AND its max range is indeed larger than its min range
 		{
 			//ratio of PPM range to time (the *2 is the result of the need to devide this between forward and backward motion)
 			//the function assumes it will be called every Millisecond
 			tower->currentPPM += ((tower->maxRange - tower->minRange) * 2) / SERVO_PUSH_TIME;
-
 		}
 		else
 		{
@@ -196,10 +264,11 @@ void SingleServoSweep(SERVO_ID *tower)
 	{
 		tower->currentPPM -= ((tower->maxRange - tower->minRange) * 2) / SERVO_PUSH_TIME;
 	}
-
+	*/
 
 
 }
+
 
 //runs the function above every 1 Millisecond, for all servos
 void AllServoSweep(void)
