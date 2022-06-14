@@ -1,5 +1,8 @@
 ### MIDI controllable music box
 ---
+
+![image](https://github.com/DrGlaucous/MIDIBox/raw/main/Images/2022_06_14_15_19_IMG_2508.JPG)
+---
 This repo contains all files that relate to the construction of my MIDI controlled music box. The design itself takes heavy inspiration from [mitxela's version](https://github.com/mitxela/musicbox), though everything seen here was made separately from scratch. 
 
 I designed this with a goal to do absolutely no modification to the music box itself, aside from non-destructive disassembly. If desired, I could revert the music box back to its original, unmodified form even after the full MIDI conversion. 
