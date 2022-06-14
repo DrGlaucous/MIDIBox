@@ -2,7 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/Firmware/ESP32MIDI/ESP32MIDI/__vm
-/Firmware/ESP32MIDI/ESP32MIDI/Debug
-/Firmware/ESP32MIDI/ESP32MIDI/Release
-/Firmware/ESP32MIDI/.vs/ESP32MIDI/v16
+/Firmware/Deprecated/ESP32MIDI/ESP32MIDI/__vm
+/Firmware/Deprecated/ESP32MIDI/ESP32MIDI/Debug
+/Firmware/Deprecated/ESP32MIDI/ESP32MIDI/Release
+/Firmware/Deprecated/ESP32MIDI/.vs/ESP32MIDI/v16

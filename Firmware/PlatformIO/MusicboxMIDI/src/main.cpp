@@ -6,7 +6,7 @@
 
 #include <MIDI.h>
 #include <Arduino.h>
-//#include <Control_Surface.h>
+//#include <Control_Surface.h>//an alternate MIDI library, but is not compatible with the STM32 (I originally inteded to use an ESP32)
 #include "configuration.h"
 #include "ServoHandler.h"
 
@@ -17,6 +17,7 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 #endif
 
+//some more control surface-alternative stuff
 /*
 HardwareSerialMIDI_Interface MIDI_SERIAL = Serial;
 BluetoothMIDI_Interface MIDI_BLE;
@@ -71,24 +72,16 @@ void onNoteOn(uint8_t channel, uint8_t pitch, uint8_t velocity) {
     }
 
 }
-void onNoteOff(uint8_t channel, uint8_t pitch, uint8_t velocity)
+//this was needed for debugging, but not for the final firmware
+/*void onNoteOff(uint8_t channel, uint8_t pitch, uint8_t velocity)
 {
     //digitalWrite(PC13, true);
 
-}
+}*/
 
 
 void setup() {
 
-
-
-    //TEMP serves as our button pin
-    //pinMode(PB1, INPUT_PULLUP);
-    //pinMode(PC13, OUTPUT);
-    //tie callbacks to midi events
-    MIDI.setHandleNoteOn(onNoteOn);
-    MIDI.setHandleNoteOff(onNoteOff);
-    MIDI.begin();
 
     //old control surface stuff
     //MIDI_SERIAL.begin(); // Initialize midi interface
@@ -96,9 +89,14 @@ void setup() {
     //MIDI_BLE.begin(); // Initialize midi interface
     //MIDI_BLE.setCallbacks(callback);
 
+
+    //tie callbacks to midi events
+    MIDI.setHandleNoteOn(onNoteOn);
+    //MIDI.setHandleNoteOff(onNoteOff);//this was needed for debugging, but not for the final firmware
+    MIDI.begin();
+
+
     SetupServo();
-    //pinMode(PB2, OUTPUT);
-    //pinMode(PA14, OUTPUT);
 
 }
 
@@ -119,11 +117,9 @@ void loop() {
     //MIDI_SERIAL.update(); // Update the Control Surface
     //MIDI_BLE.update();
     
+
+
     //perform servo actions
-    //static bool pressedButton = false;
-
-
-
     AllServoSweep();
     AllServoDrive();
     WaferServoDrive();

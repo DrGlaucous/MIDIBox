@@ -20,10 +20,10 @@ enum {
 
 //number of notes on the music box
 #define SERVO_COUNT 30
-#define SERVO_PUSH_TIME 300//in Milliseconds (1K == 1 second)
+#define SERVO_PUSH_TIME 400//in Milliseconds (1K == 1 second)
 
 
 #define CONTINUOUS_REST_ANGLE 1500//the angle the continuous rotation servo will be set to "at rest"
 #define CONTINUOUS_ACTIVE_ANGLE 700//the angle it uses when rotating (i believe the more different it is from the rest angle, the faster the servo will go)
-#define CONTINUOUS_SERVO_PIN PB2//PA14//pin for this servo
-#define CONTINUOUS_RUN_TIME 1000//time in milliseconds the servo will spin
+#define CONTINUOUS_SERVO_PIN PA14//PA14//pin for this servo
+#define CONTINUOUS_RUN_TIME 500//time in milliseconds the servo will spin

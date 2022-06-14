@@ -9,37 +9,37 @@ SERVO_ID SMT[] =
 {
 	//pin, note, minRange, maxRange, currentPPM, requestNote, goForward
 	//main side (forwards)
-	{PB12, 53, 1000, 1500, 1000, false, false},//lowest note, going up
-	{PB13, 55, 1000, 1500, 1000, false, false},
-	{PB14, 60, 1000, 1500, 1000, false, false},
-	{PA8, 62, 1000, 1500, 1000, false, false},
-	{PA8, 64, 1000, 1500, 1000, false, false},
-	{PA11, 65, 1000, 1500, 1000, false, false},
-	{PA12, 67, 1000, 1500, 1000, false, false},
-	{PA15, 69, 1000, 1500, 1000, false, false},
-	{PB3, 70, 1000, 1500, 1000, false, false},
-	{PB4, 71, 1000, 1500, 1000, false, false},
-	{PB5, 72, 1000, 1500, 1000, false, false},
-	{PB6, 73, 1000, 1500, 1000, false, false},
-	{PB7, 74, 1000, 1500, 1000, false, false},
-	{PB8, 75, 1000, 1500, 1000, false, false},
-	{PB9, 76, 1000, 1500, 1000, false, false},
+	{PB12, 53, 900, 1500, 900, false, false},//0**lowest note, going up
+	{PB13, 55, 950, 1500, 950, false, false},//1**
+	{PB14, 60, 1040, 1700, 1040, false, false},//2**
+	{PB15, 62, 950, 1650, 950, false, false},//3
+	{PA8, 64, 1000, 1530, 1000, false, false},//4**
+	{PA11, 65, 1000, 1550, 1000, false, false},//5USB- (unplug these two for USB serial)
+	{PA12, 67, 970, 1600, 970, false, false},//6USB+
+	{PA15, 69, 950, 1600, 950, false, false},//7
+	{PB3, 70, 1050, 1600, 1050, false, false},//8
+	{PB4, 71, 950, 1550, 950, false, false},//9
+	{PB5, 72, 1000, 1600, 1000, false, false},//10**C
+	{PB6, 73, 950, 1500, 950, false, false},//11**C#
+	{PB7, 74, 950, 1550, 950, false, false},//12**D
+	{PB8, 75, 1000, 1600, 1000, false, false},//13**
+	{PB9, 76, 1000, 1600, 1000, false, false},//14**
 	//port side (backwards)
-	{PB11, 77, 1500, 1000, 1500, false, false},//mid-note, going up
-	{PB10, 78, 1500, 1000, 1500, false, false},
-	{PB1, 79, 1500, 1000, 1500, false, false},
-	{PB0, 80, 1500, 1000, 1500, false, false},
-	{PA7, 81, 1500, 1000, 1500, false, false},
-	{PA6, 82, 1500, 1000, 1500, false, false},
-	{PA5, 83, 1500, 1000, 1500, false, false},
-	{PA4, 84, 1500, 1000, 1500, false, false},
-	{PA3, 85, 1500, 1000, 1500, false, false},
-	{PA2, 86, 1500, 1000, 1500, false, false},
-	{PA1, 87, 1500, 1000, 1500, false, false},
-	{PA0, 88, 1500, 1000, 1500, false, false},
-	{PC15, 89, 1500, 1000, 1500, false, false},
-	{PC14, 91, 1500, 1000, 1500, false, false},
-	{PC13, 93, 1500, 1000, 1500, false, false},//highest note
+	{PB11, 77, 1500, 900, 1500, false, false},//15*Cal*mid-note, going up
+	{PB10, 78, 1600, 970, 1600, false, false},//16**
+	{PB1, 79, 1470, 900, 1470, false, false},//17**
+	{PB0, 80, 1600, 1000, 1600, false, false},//18**
+	{PA7, 81, 1500, 1000, 1500, false, false},//doesn't work for some reason
+	{PA6, 82, 1600, 1000, 1600, false, false},//20**
+	{PA5, 83, 1500, 950, 1500, false, false},//21**
+	{PA4, 84, 1420, 900, 1420, false, false},//22**
+	{PA3, 85, 1600, 1000, 1600, false, false},//23**
+	{PA2, 86, 1500, 900, 1500, false, false},//24**
+	{PA1, 87, 1420, 900, 1420, false, false},//25**
+	{PA0, 88, 1530, 970, 1530, false, false},//26**borrowed
+	{PC15, 89, 1600, 1050, 1600, false, false},//27**ditto
+	{PC14, 91, 1580, 980, 1580, false, false},//28**
+	{PC13, 93, 1500, 950, 1500, false, false},//29**highest note
 };
 
 
@@ -49,6 +49,7 @@ SERVO_ID CONTINUOUS_SERVO =
 	{CONTINUOUS_SERVO_PIN, 0, CONTINUOUS_REST_ANGLE, CONTINUOUS_ACTIVE_ANGLE, CONTINUOUS_REST_ANGLE, false, false};
 
 
+//these should be with the GetTicks() function, but in order to use them in other pages, I would need to make another header file, and I'm lazy
 unsigned long MillisecondTicks{};
 unsigned long MicrosecondTicks{};
 unsigned long LastMillisecondTicks{};//previous values
@@ -127,6 +128,8 @@ void AllServoDrive(void)
 		//will not run the servo if it is not being used
 		if(SMT[i].activeTime < SERVO_PUSH_TIME + (SERVO_PUSH_TIME / 2))//I've added a little extra time for the servo to make it back
 			ServoBackend(&SMT[i]);
+		//else if(SMT[i].pinNo == PA7)//for debugging
+		//	ServoBackend(&SMT[i]);
 
 	}
 
@@ -156,7 +159,7 @@ void WaferServoDrive(void)
 		++waferTimeout;
 	}
 
-	//this will only attach the servo if it needs to be run, which will save energy
+	//this will only attach the servo if it needs to be run, which will save CPU cycles
 	if(waferTimeout < CONTINUOUS_RUN_TIME)
 	{
 		//digitalWrite(PC13, false);
@@ -164,12 +167,13 @@ void WaferServoDrive(void)
 		CONTINUOUS_SERVO.currentPPM = CONTINUOUS_SERVO.maxRange;
 		ServoBackend(&CONTINUOUS_SERVO);
 	}
-	else
+	//this conditional was only needed for debugging
+	/*else
 	{
 		//digitalWrite(PC13, true);
 		CONTINUOUS_SERVO.currentPPM = CONTINUOUS_SERVO.minRange;
 		ServoBackend(&CONTINUOUS_SERVO);
-	}
+	}*/
 
 
 }
