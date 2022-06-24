@@ -7,39 +7,39 @@
 //Servo Map Table
 SERVO_ID SMT[] =
 {
-	//pin, note, minRange, maxRange, currentPPM, requestNote, goForward
+	//pin, note, minRange, maxRange, currentPPM, requestNote, goForward, dwellTime, 
 	//main side (forwards)
-	{PB12, 53, 900, 1500, 900, false, false},//0**lowest note, going up
-	{PB13, 55, 950, 1500, 950, false, false},//1**
-	{PB14, 60, 1040, 1700, 1040, false, false},//2**
-	{PB15, 62, 950, 1650, 950, false, false},//3
-	{PA8, 64, 1000, 1530, 1000, false, false},//4**
-	{PA11, 65, 1000, 1550, 1000, false, false},//5USB- (unplug these two for USB serial)
-	{PA12, 67, 970, 1600, 970, false, false},//6USB+
-	{PA15, 69, 950, 1600, 950, false, false},//7
-	{PB3, 70, 1050, 1600, 1050, false, false},//8
-	{PB4, 71, 950, 1550, 950, false, false},//9
-	{PB5, 72, 1000, 1600, 1000, false, false},//10**C
-	{PB6, 73, 950, 1500, 950, false, false},//11**C#
-	{PB7, 74, 950, 1550, 950, false, false},//12**D
-	{PB8, 75, 1000, 1600, 1000, false, false},//13**
-	{PB9, 76, 1000, 1600, 1000, false, false},//14**
+	{PB12, 53, 900, 1500, 900, false, false, 0},//0**lowest note, going up
+	{PB13, 55, 950, 1500, 950, false, false, 0},//1**
+	{PB14, 60, 1040, 1700, 1040, false, false, 20},//2**
+	{PB15, 62, 950, 1650, 950, false, false, 0},//3
+	{PA8, 64, 1000, 1530, 1000, false, false, 30},//4**
+	{PA11, 65, 1000, 1550, 1000, false, false, 0},//5USB- (unplug these two for USB serial)
+	{PA12, 67, 970, 1600, 970, false, false, 0},//6USB+
+	{PA15, 69, 950, 1600, 950, false, false, 0},//7
+	{PB3, 70, 1050, 1600, 1050, false, false, 0},//8
+	{PB4, 71, 950, 1550, 950, false, false, 0},//9
+	{PB5, 72, 1000, 1600, 1000, false, false, 0},//10**C
+	{PB6, 73, 950, 1500, 950, false, false, 0},//11**C#
+	{PB7, 74, 950, 1550, 950, false, false, 0},//12**D
+	{PB8, 75, 1000, 1600, 1000, false, false, 0},//13**
+	{PB9, 76, 1000, 1600, 1000, false, false, 0},//14**
 	//port side (backwards)
-	{PB11, 77, 1500, 900, 1500, false, false},//15*Cal*mid-note, going up
-	{PB10, 78, 1600, 970, 1600, false, false},//16**
-	{PB1, 79, 1470, 900, 1470, false, false},//17**
-	{PB0, 80, 1600, 1000, 1600, false, false},//18**
-	{PA7, 81, 1500, 1000, 1500, false, false},//doesn't work for some reason
-	{PA6, 82, 1600, 1000, 1600, false, false},//20**
-	{PA5, 83, 1500, 950, 1500, false, false},//21**
-	{PA4, 84, 1420, 900, 1420, false, false},//22**
-	{PA3, 85, 1600, 1000, 1600, false, false},//23**
-	{PA2, 86, 1500, 900, 1500, false, false},//24**
-	{PA1, 87, 1420, 900, 1420, false, false},//25**
-	{PA0, 88, 1530, 970, 1530, false, false},//26**borrowed
-	{PC15, 89, 1600, 1050, 1600, false, false},//27**ditto
-	{PC14, 91, 1580, 980, 1580, false, false},//28**
-	{PC13, 93, 1500, 950, 1500, false, false},//29**highest note
+	{PB11, 77, 1500, 900, 1500, false, false, 0},//15**F mid-note, going up
+	{PB10, 78, 1600, 970, 1600, false, false, 0},//16**
+	{PB1, 79, 1470, 900, 1470, false, false, 40},//17**G
+	{PB0, 80, 1600, 1000, 1600, false, false, 0},//18**
+	{PA7, 81, 1530, 1000, 1530, false, false, 30},//19**A
+	{PA6, 82, 1600, 1000, 1600, false, false, 0},//20**
+	{PA5, 83, 1500, 950, 1500, false, false, 0},//21**B
+	{PA4, 84, 1420, 900, 1420, false, false, 40},//22**C
+	{PA3, 85, 1600, 1000, 1600, false, false, 0},//23**
+	{PA2, 86, 1500, 900, 1500, false, false, 0},//24**D
+	{PA1, 87, 1420, 900, 1420, false, false, 50},//25**
+	{PA0, 88, 1530, 970, 1530, false, false, 20},//26**E borrowed
+	{PC15, 89, 1600, 1050, 1600, false, false, 0},//27**ditto
+	{PC14, 91, 1580, 980, 1580, false, false, 0},//28**
+	{PC13, 93, 1500, 950, 1500, false, false, 0},//29**highest note//PC13 (when debugging, I use placeholder PB2 so I can connect the stlink (the wafer servo uses this pin))
 };
 
 
@@ -186,29 +186,42 @@ void SingleServoSweep(SERVO_ID *tower)
 	if (tower->requestNote == true)
 	{
 		tower->requestNote = false;
+#ifdef WAIT_UNTIL_DONE
+		if(tower->activeTime >= SERVO_PUSH_TIME)//will only push again if the tower has been active for at least the required ammount
+		{
+			tower->goForward = true;
+			tower->activeTime = 0;
+		}
+#else
 		tower->goForward = true;
 		tower->activeTime = 0;
+#endif
+
 	}
 
-	
+
+
+
+
+#ifdef SMOOTH_SWEEP
 	if(tower->minRange > tower->maxRange)
 	{
 		
 		//everything here is an exact copy of the logic below, but inverted to account for the reversed inequalities
 		if (tower->goForward == true)
 		{
-			if (tower->currentPPM > tower->maxRange)//tower is less than max range AND its max range is indeed larger than its min range
+			if (tower->currentPPM > tower->maxRange)//tower is less than max range AND 
 			{
-				tower->currentPPM -= ((tower->minRange - tower->maxRange) * 2) / SERVO_PUSH_TIME;
+				tower->currentPPM -= (tower->minRange - tower->maxRange) / ((SERVO_PUSH_TIME / 2) - tower->dwellTime);
 			}
-			else
+			else if(SERVO_PUSH_TIME < tower->activeTime * 2)
 			{
 				tower->goForward = false;
 			}
 		}
 		else if (tower->currentPPM < tower->minRange)
 		{
-			tower->currentPPM += ((tower->minRange - tower->maxRange) * 2) / SERVO_PUSH_TIME;
+			tower->currentPPM += (tower->minRange - tower->maxRange) / ((SERVO_PUSH_TIME / 2) - tower->dwellTime);
 		}
 		
 	}
@@ -218,16 +231,15 @@ void SingleServoSweep(SERVO_ID *tower)
 		if (tower->goForward == true)
 		{
 			//add a value to its angle
-			if (tower->currentPPM < tower->maxRange)//tower is less than max range AND its max range is indeed larger than its min range
+			if (tower->currentPPM < tower->maxRange)//tower is less than max range
 			{
-				//ratio of PPM range to time (the *2 is the result of the need to devide this between forward and backward motion)
+				//ratio of PPM range to time minus the reserved ammount(the /2 is the result of the need to devide this between forward and backward motion)
 				//the function assumes it will be called every Millisecond
-				tower->currentPPM += ((tower->maxRange - tower->minRange) * 2) / SERVO_PUSH_TIME;
+				tower->currentPPM += (tower->maxRange - tower->minRange) / ((SERVO_PUSH_TIME / 2) - tower->dwellTime);
 
 			}
-			else
+			else if(SERVO_PUSH_TIME < tower->activeTime * 2)//the servo has been active for 1/2 of the total allowed time
 			{
-
 				tower->goForward = false;
 			}
 
@@ -235,11 +247,26 @@ void SingleServoSweep(SERVO_ID *tower)
 		}
 		else if (tower->currentPPM > tower->minRange)
 		{
-			tower->currentPPM -= ((tower->maxRange - tower->minRange) * 2) / SERVO_PUSH_TIME;
+			tower->currentPPM -= (tower->maxRange - tower->minRange) / ((SERVO_PUSH_TIME / 2) - tower->dwellTime);
 		}
 		
 
 	}
+#else
+
+	if(tower->activeTime * 2 < SERVO_PUSH_TIME && tower->goForward == true)//it has been pushing for 1/2 of the total allowed push time
+		tower->currentPPM = tower->maxRange;
+	else
+	{
+		tower->currentPPM = tower->minRange;
+		tower->goForward = false;
+	}
+
+#endif
+
+
+
+
 
 	if(tower->activeTime < SERVO_PUSH_TIME * 2)//this conditional prevents integer overflowing
 		++tower->activeTime;//increment the timeout variable

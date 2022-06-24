@@ -10,6 +10,7 @@ typedef struct SERVO_ID
 	unsigned int currentPPM;//where the servo currently is in the sweep (we would only need this if we want to have the servo travel slower than max speed)
 	bool requestNote;//initally sent to start the servo playing a note
 	bool goForward;//direction variable
+	unsigned int dwellTime;//how much time (ms) the servo will spend at position (only matters if SMOOTH_SWEEP is defined), good for some slower moving servos
 	unsigned int activeTime;//how long the servo has been "sweeping"
 	//ints are 2 bytes with arduinos
 
